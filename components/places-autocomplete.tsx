@@ -1,8 +1,11 @@
 import usePlacesAutocomplete from "use-places-autocomplete";
+import { Input } from "@/components/ui/input";
 
 export function PlacesAutocomplete({
+  defaultValue,
   onAddressSelect,
 }: {
+  defaultValue?: string;
   onAddressSelect: (address: string) => void;
 }) {
   const {
@@ -43,8 +46,8 @@ export function PlacesAutocomplete({
 
   return (
     <div className="">
-      <input
-        value={value}
+      <Input
+        value={value || defaultValue}
         className="w-full rounded border border-gray-300 p-2"
         disabled={!ready}
         onChange={(e) => setValue(e.target.value)}
