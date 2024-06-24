@@ -11,7 +11,7 @@ export default function DashboardLayout({
         <div className="flex items-center gap-4">
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/locations" target="_blank">
-            Locations
+            Preview
           </Link>
         </div>
       </nav>
