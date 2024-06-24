@@ -17,8 +17,8 @@ export default async function Dashboard() {
           </div>
         </div>
 
-        <div className="mt-4 w-full grow overflow-hidden">
-          <table className="flex h-full w-full flex-col">
+        <div className="mt-4 w-full grow overflow-auto">
+          <table className="h-full w-full">
             <thead className="bg-gray-100">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -29,7 +29,7 @@ export default async function Dashboard() {
                 </th>
               </tr>
             </thead>
-            <tbody className="w-full grow divide-y divide-gray-200 overflow-auto bg-white">
+            <tbody className="divide-y divide-gray-200 overflow-auto bg-white">
               {locations.map((location) => (
                 <tr key={location.id} className="group relative">
                   <td className="px-6 py-4 text-sm text-gray-900">
