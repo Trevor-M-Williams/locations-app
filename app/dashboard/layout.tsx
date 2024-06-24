@@ -10,7 +10,9 @@ export default function DashboardLayout({
       <nav className="flex items-center justify-end border-b bg-background p-4">
         <div className="flex items-center gap-4">
           <Link href="/dashboard">Dashboard</Link>
-          <Link href="/locations">Locations</Link>
+          <Link href="/locations" target="_blank">
+            Locations
+          </Link>
         </div>
       </nav>
 

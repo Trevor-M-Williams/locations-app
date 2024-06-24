@@ -20,6 +20,16 @@ export async function addLocation(location: MapsLocation) {
   }
 }
 
+export async function addLocations(data: MapsLocation[]) {
+  try {
+    await db.insert(locations).values(data);
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (e) {
+    return { error: "Failed to add locations" };
+  }
+}
+
 export async function updateLocation(location: MapsLocationWithId) {
   try {
     await db

@@ -8,7 +8,7 @@ import {
   MarkerF,
   InfoWindow,
 } from "@react-google-maps/api";
-import { getLocations } from "@/server/actions/test";
+import { getLocations } from "@/server/actions/locations";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GoogleMapsIcon } from "@/components/ui/icons";

@@ -2,7 +2,7 @@
 
 import { Trash } from "lucide-react";
 import { LocationModal } from "./location-modal";
-import { deleteLocation } from "@/server/actions/test";
+import { deleteLocation } from "@/server/actions/locations";
 
 export function LocationControls({
   location,

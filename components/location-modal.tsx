@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
 import { useLoadScript } from "@react-google-maps/api";
-import { addLocation, updateLocation } from "@/server/actions/test";
+import { addLocation, updateLocation } from "@/server/actions/locations";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Pencil } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 
 export function LocationModal({ data }: { data?: MapsLocationWithId }) {
   const mode = data ? "update" : "add";
@@ -72,16 +72,24 @@ export function LocationModal({ data }: { data?: MapsLocationWithId }) {
 
   if (!isLoaded)
     return (
-      <Button disabled size={"sm"}>
-        Add
-      </Button>
+      <>
+        {mode === "add" ? (
+          <Button variant={"outline"} size={"icon"} className="size-8">
+            <Plus />
+          </Button>
+        ) : (
+          <Pencil className="size-4 cursor-pointer hover:text-gray-800" />
+        )}
+      </>
     );
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DialogTrigger asChild>
         {mode === "add" ? (
-          <Button size={"sm"}>Add</Button>
+          <Button variant={"outline"} size={"icon"} className="size-8">
+            <Plus />
+          </Button>
         ) : (
           <Pencil className="size-4 cursor-pointer hover:text-gray-800" />
         )}

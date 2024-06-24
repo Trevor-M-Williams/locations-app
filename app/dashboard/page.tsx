@@ -1,6 +1,7 @@
 import { LocationModal } from "@/components/location-modal";
-import { getLocations } from "@/server/actions/test";
+import { getLocations } from "@/server/actions/locations";
 import { LocationControls } from "@/components/location-controls";
+import { UploadModal } from "@/components/upload-modal";
 
 export default async function Dashboard() {
   const locations = await getLocations();
@@ -10,7 +11,10 @@ export default async function Dashboard() {
       <div className="mx-auto w-full max-w-4xl p-8">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Ricava Tequila</h1>
-          <LocationModal />
+          <div className="flex items-center gap-2">
+            <LocationModal />
+            <UploadModal />
+          </div>
         </div>
 
         <table className="mt-4 min-w-full">
