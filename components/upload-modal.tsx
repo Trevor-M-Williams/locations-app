@@ -69,7 +69,7 @@ export function UploadModal() {
       const rows = text.split("\n");
       const data = await Promise.all(
         rows.map(async (row) => {
-          const name = row.split(",")[0];
+          const name = row.split(",")[0].replaceAll(/"/g, "");
           const address = row
             .split(",")
             .slice(1)
