@@ -69,10 +69,10 @@ const useMap = (
 
 const LocationList = ({
   locations,
-  onSelectLocation,
+  setSelectLocation: setSelectedLocation,
 }: {
   locations: MapsLocationWithId[];
-  onSelectLocation: (location: MapsLocationWithId | null) => void;
+  setSelectLocation: (location: MapsLocationWithId | null) => void;
 }) => (
   <ul className="divide-y px-4">
     {locations.map((location) => {
@@ -86,7 +86,7 @@ const LocationList = ({
         <li
           key={location.id}
           className="flex cursor-pointer items-center justify-between p-2 py-4 transition-colors hover:bg-gray-100"
-          onClick={() => onSelectLocation(location)}
+          onClick={() => setSelectedLocation(location)}
         >
           <div>
             <div className="font-medium">{location.name}</div>
@@ -105,78 +105,80 @@ const LocationList = ({
   </ul>
 );
 
+const LocationInfoWindow = ({
+  position,
+  location,
+  onCloseClick,
+}: {
+  position: { lat: number; lng: number };
+  location: MapsLocationWithId;
+  onCloseClick: () => void;
+}) => {
+  const href = new URL(`https://www.google.com/maps/?q=${location.address}`);
+  const address1 = location.address.split(",")[0];
+  const address2 = location.address.split(",").slice(1).join(", ");
+
+  return (
+    <InfoWindow position={position} onCloseClick={onCloseClick}>
+      <div className="w-48 font-[Roboto,Arial] text-[13px] font-normal">
+        <h2 className="mb-1 mr-8 text-[14px] font-medium">{location.name}</h2>
+        <div className="mr-8">
+          <p>{address1}</p>
+          <p>{address2}</p>
+          <Link
+            href={href}
+            className="text-[#1a73e8] hover:underline focus:outline-none"
+          >
+            View on Google Maps
+          </Link>
+        </div>
+      </div>
+    </InfoWindow>
+  );
+};
 const MapMarkers = ({
   locations,
   userLocation,
   selectedLocation,
-  onSelectLocation,
+  setSelectedLocation,
 }: {
   locations: MapsLocationWithId[];
   userLocation: MapsLocationWithId | null;
   selectedLocation: MapsLocationWithId | null;
-  onSelectLocation: (location: MapsLocationWithId | null) => void;
+  setSelectedLocation: (location: MapsLocationWithId | null) => void;
 }) => (
   <>
     {userLocation && (
       <MarkerF
         position={userLocation}
         icon={{ url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }}
-        onClick={() => onSelectLocation(userLocation)}
+        onClick={() => setSelectedLocation(userLocation)}
       >
         {selectedLocation?.id === userLocation.id && (
-          <InfoWindow
+          <LocationInfoWindow
             position={{ lat: userLocation.lat, lng: userLocation.lng }}
-            onCloseClick={() => onSelectLocation(null)}
-          >
-            <div className="w-48 font-[Roboto,Arial] text-[13px] font-normal">
-              <h2 className="mb-1 text-[14px] font-medium">Your Location</h2>
-              <div className="mr-8">
-                <p>{userLocation.address.split(",")[0]}</p>
-                <p>{userLocation.address.split(",").slice(1).join(", ")}</p>
-              </div>
-            </div>
-          </InfoWindow>
+            location={userLocation}
+            onCloseClick={() => setSelectedLocation(null)}
+          />
         )}
       </MarkerF>
     )}
-    {locations.map((location) => {
-      const href = new URL(
-        `https://www.google.com/maps/?q=${location.address}`,
-      );
-      const address1 = location.address.split(",")[0];
-      const address2 = location.address.split(",").slice(1).join(", ");
-      return (
-        <MarkerF
-          key={location.id}
-          position={{ lat: location.lat, lng: location.lng }}
-          icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
-          onClick={() => onSelectLocation(location)}
-        >
-          {selectedLocation?.id === location.id && (
-            <InfoWindow
-              position={{ lat: location.lat, lng: location.lng }}
-              onCloseClick={() => onSelectLocation(null)}
-            >
-              <div className="min-w-48 font-[Roboto,Arial] text-[13px] font-normal">
-                <h2 className="mb-1 text-[14px] font-medium">
-                  {location.name}
-                </h2>
-                <div className="mr-8">
-                  <p>{address1}</p>
-                  <p>{address2}</p>
-                  <Link
-                    href={href}
-                    className="text-[#1a73e8] hover:underline focus:outline-none"
-                  >
-                    View on Google Maps
-                  </Link>
-                </div>
-              </div>
-            </InfoWindow>
-          )}
-        </MarkerF>
-      );
-    })}
+    {locations.map((location) => (
+      <MarkerF
+        key={location.id}
+        position={{ lat: location.lat, lng: location.lng }}
+        icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
+        onClick={() => setSelectedLocation(location)}
+      >
+        {selectedLocation?.id === location.id && (
+          <LocationInfoWindow
+            position={{ lat: location.lat, lng: location.lng }}
+            location={location}
+            onCloseClick={() => setSelectedLocation(null)}
+          />
+        )}
+      </MarkerF>
+    ))}
   </>
 );
 
@@ -197,8 +199,8 @@ export default function Locations() {
 
   return (
     <div className="absolute inset-0 flex">
-      <ScrollArea className="relative w-[32rem] overflow-auto bg-background">
-        <div className="sticky top-0 space-y-2 border-b bg-background px-4 py-6">
+      <div className="relative flex h-full w-[32rem] flex-col">
+        <div className="space-y-2 border-b bg-background px-4 py-6">
           <p>Find a location near you</p>
           <PlacesAutocomplete
             onAddressSelect={(address) => {
@@ -218,11 +220,13 @@ export default function Locations() {
           />
         </div>
 
-        <LocationList
-          locations={locations}
-          onSelectLocation={setSelectedLocation}
-        />
-      </ScrollArea>
+        <ScrollArea className="flex-grow overflow-auto bg-background">
+          <LocationList
+            locations={locations}
+            setSelectLocation={setSelectedLocation}
+          />
+        </ScrollArea>
+      </div>
 
       <GoogleMap
         options={{
@@ -242,7 +246,7 @@ export default function Locations() {
           locations={locations}
           userLocation={mapState.userLocation}
           selectedLocation={mapState.selectedLocation}
-          onSelectLocation={setSelectedLocation}
+          setSelectedLocation={setSelectedLocation}
         />
       </GoogleMap>
     </div>

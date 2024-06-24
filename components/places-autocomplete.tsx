@@ -38,14 +38,15 @@ export function PlacesAutocomplete({
           }}
           className="cursor-pointer p-2 hover:bg-gray-200"
         >
-          <strong>{main_text}</strong> <small>{secondary_text}</small>
+          <span className="font-semibold">{main_text}</span>{" "}
+          <span className="text-gray-500">{secondary_text}</span>
         </li>
       );
     });
   };
 
   return (
-    <div className="">
+    <div className="relative">
       <Input
         value={value || defaultValue}
         className="w-full rounded border border-gray-300 p-2"
@@ -55,7 +56,7 @@ export function PlacesAutocomplete({
       />
 
       {status === "OK" && (
-        <ul className="mt-2 rounded border border-gray-300">
+        <ul className="absolute z-10 mt-2 rounded border border-gray-300 bg-background">
           {renderSuggestions()}
         </ul>
       )}
