@@ -80,3 +80,7 @@
   top: 0;
   right: 0;
 }
+
+.gm-style .gm-style-iw-t {
+  bottom: 45px !important;
+}

@@ -13,16 +13,47 @@ import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GoogleMapsIcon } from "@/components/ui/icons";
 
-const useLocations = () => {
+const calculateDistance = (
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+) => {
+  const toRad = (value: number) => (value * Math.PI) / 180;
+  const R = 3958.8; // Radius of the Earth in miles
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in miles
+};
+
+const useLocations = (userLocation: MapsLocationWithId | null) => {
   const [locations, setLocations] = useState<MapsLocationWithId[]>([]);
 
   useEffect(() => {
     const fetchLocations = async () => {
-      const locations = await getLocations();
+      const locations = (await getLocations()) as MapsLocationWithId[];
+      if (userLocation) {
+        locations.forEach((location) => {
+          location.distance = calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            location.lat,
+            location.lng,
+          );
+        });
+        locations.sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0));
+      }
       setLocations(locations);
     };
     fetchLocations();
-  }, []);
+  }, [userLocation]);
 
   return locations;
 };
@@ -81,11 +112,14 @@ const LocationList = ({
       );
       const address1 = location.address.split(",")[0];
       const address2 = location.address.split(",").slice(1).join(", ");
+      const distance = location.distance
+        ? `${location.distance.toFixed(1)} mi`
+        : "";
 
       return (
         <li
           key={location.id}
-          className="flex cursor-pointer items-center justify-between p-2 py-4 transition-colors hover:bg-gray-100"
+          className="flex cursor-pointer items-center justify-between gap-2 p-2 py-4 transition-colors hover:bg-gray-100"
           onClick={() => setSelectedLocation(location)}
         >
           <div>
@@ -96,9 +130,12 @@ const LocationList = ({
               {address2}
             </div>
           </div>
-          <Link href={href} onClick={(e) => e.stopPropagation()}>
-            <GoogleMapsIcon />
-          </Link>
+          <div className="flex shrink-0 flex-col items-center">
+            <Link href={href} onClick={(e) => e.stopPropagation()}>
+              <GoogleMapsIcon />
+            </Link>
+            <div className="text-sm text-gray-500">{distance}</div>
+          </div>
         </li>
       );
     })}
@@ -119,7 +156,10 @@ const LocationInfoWindow = ({
   const address2 = location.address.split(",").slice(1).join(", ");
 
   return (
-    <InfoWindow position={position} onCloseClick={onCloseClick}>
+    <InfoWindow
+      position={{ lat: position.lat, lng: position.lng }}
+      onCloseClick={onCloseClick}
+    >
       <div className="w-48 font-[Roboto,Arial] text-[13px] font-normal">
         <h2 className="mb-1 mr-8 text-[14px] font-medium">{location.name}</h2>
         <div className="mr-8">
@@ -136,6 +176,7 @@ const LocationInfoWindow = ({
     </InfoWindow>
   );
 };
+
 const MapMarkers = ({
   locations,
   userLocation,
@@ -183,11 +224,11 @@ const MapMarkers = ({
 );
 
 export default function Locations() {
-  const locations = useLocations();
   const { mapState, setSelectedLocation, setUserLocation } = useMap(
-    { lat: 33.7392358, lng: -104.990251 },
+    { lat: 33.7392358, lng: -106.990251 },
     5,
   );
+  const locations = useLocations(mapState.userLocation);
 
   const libraries = useMemo(() => ["places"], []);
   const { isLoaded } = useLoadScript({

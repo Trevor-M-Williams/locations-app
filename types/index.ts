@@ -3,6 +3,7 @@ type MapsLocation = {
   address: string;
   lat: number;
   lng: number;
+  distance?: number;
 };
 
 type MapsLocationWithId = MapsLocation & {

@@ -7,7 +7,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <div className="absolute inset-0 flex flex-col">
-      <nav className="flex items-center justify-end border-b bg-background p-4">
+      <nav className="flex items-center justify-end border-b bg-background px-8 py-4">
         <div className="flex items-center gap-4">
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/locations" target="_blank">
