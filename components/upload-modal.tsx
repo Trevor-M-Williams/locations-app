@@ -70,7 +70,11 @@ export function UploadModal() {
       const data = await Promise.all(
         rows.map(async (row) => {
           const name = row.split(",")[0];
-          const address = row.split(",").slice(1).join(",").replace(/"/g, "");
+          const address = row
+            .split(",")
+            .slice(1)
+            .join(",")
+            .replaceAll(/"/g, "");
           if (
             !name ||
             !address ||
@@ -205,6 +209,9 @@ export function UploadModal() {
               >
                 <input {...getInputProps()} />
                 <p>Drag & drop or click to select</p>
+                <p className="mt-2 text-sm text-gray-500">
+                  Note: Names must not contain commas!
+                </p>
               </div>
             )}
           </>
