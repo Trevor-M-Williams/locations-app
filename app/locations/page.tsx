@@ -12,6 +12,7 @@ import { getLocations } from "@/server/actions/locations";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GoogleMapsIcon } from "@/components/ui/icons";
+import { MenuIcon } from "lucide-react";
 
 const calculateDistance = (
   lat1: number,
@@ -101,9 +102,11 @@ const useMap = (
 const LocationList = ({
   locations,
   setSelectLocation: setSelectedLocation,
+  setIsSidebarOpen,
 }: {
   locations: MapsLocationWithId[];
   setSelectLocation: (location: MapsLocationWithId | null) => void;
+  setIsSidebarOpen: (isOpen: boolean) => void;
 }) => (
   <ul className="divide-y px-4">
     {locations.map((location) => {
@@ -120,7 +123,10 @@ const LocationList = ({
         <li
           key={location.id}
           className="flex cursor-pointer items-center justify-between gap-2 p-2 py-4 transition-colors hover:bg-gray-100"
-          onClick={() => setSelectedLocation(location)}
+          onClick={() => {
+            setSelectedLocation(location);
+            setIsSidebarOpen(false);
+          }}
         >
           <div>
             <div className="font-medium">{location.name}</div>
@@ -236,11 +242,21 @@ export default function Locations() {
     libraries: libraries as any, // TODO: fix type
   });
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State to control sidebar visibility
+
   if (!isLoaded) return null;
 
   return (
     <div className="absolute inset-0 flex">
-      <div className="relative flex h-full w-[32rem] flex-col">
+      <MenuIcon
+        className="absolute right-4 top-4 z-20 size-8 cursor-pointer rounded bg-white p-1 md:hidden"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
+      <div
+        className={`absolute z-10 flex h-full w-full flex-col bg-white md:relative md:w-[32rem] ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
+      >
         <div className="space-y-2 border-b bg-background px-4 py-6">
           <p>Find a location near you</p>
           <PlacesAutocomplete
@@ -265,6 +281,7 @@ export default function Locations() {
           <LocationList
             locations={locations}
             setSelectLocation={setSelectedLocation}
+            setIsSidebarOpen={setIsSidebarOpen}
           />
         </ScrollArea>
       </div>
