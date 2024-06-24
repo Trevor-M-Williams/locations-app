@@ -16,7 +16,7 @@ export default function DashboardLayout({
         </div>
       </nav>
 
-      <div className="flex grow">{children}</div>
+      <div className="flex grow overflow-hidden">{children}</div>
     </div>
   );
 }
