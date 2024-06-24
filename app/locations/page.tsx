@@ -12,7 +12,7 @@ import { getLocations } from "@/server/actions/locations";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GoogleMapsIcon } from "@/components/ui/icons";
-import { MenuIcon } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 const calculateDistance = (
   lat1: number,
@@ -248,10 +248,17 @@ export default function Locations() {
 
   return (
     <div className="absolute inset-0 flex">
-      <MenuIcon
-        className="absolute right-4 top-4 z-20 size-8 cursor-pointer rounded bg-white p-1 md:hidden"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      />
+      {isSidebarOpen ? (
+        <X
+          className="absolute right-4 top-4 z-20 size-8 cursor-pointer rounded bg-white p-1 md:hidden"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
+      ) : (
+        <Search
+          className="absolute right-4 top-4 z-20 size-8 cursor-pointer rounded bg-white p-1 md:hidden"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
+      )}
       <div
         className={`absolute z-10 flex h-full w-full flex-col bg-white md:relative md:w-[32rem] ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
